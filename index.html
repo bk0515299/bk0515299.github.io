@@ -8,75 +8,7 @@
 </head>
 <body>
 <!-- partial:index.partial.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File Converter</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-        input[type="file"] {
-            margin-bottom: 20px;
-        }
-        button {
-            padding: 10px 15px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-    </style>
-</head>
-<body>
-    <h1>File Converter (TXT to CSV)</h1>
-    
-    <!-- Input for file selection -->
-    <input type="file" id="fileInput" accept=".txt">
-    <br><br>
-
-    <!-- Button to trigger conversion -->
-    <button onclick="convertFile()">Convert to CSV</button>
-
-    <br><br>
-    <a id="downloadLink" style="display:none;" download="converted.csv">Download Converted File</a>
-
-    <script>
-        function convertFile() {
-            const fileInput = document.getElementById('fileInput');
-            const downloadLink = document.getElementById('downloadLink');
-
-            if (fileInput.files.length === 0) {
-                alert('Please select a .txt file first.');
-                return;
-            }
-
-            const file = fileInput.files[0];
-            const reader = new FileReader();
-
-            reader.onload = function(e) {
-                const content = e.target.result;
-                const rows = content.split('\n'); // Split text by line
-                const csvContent = rows.map(row => row.split(' ').join(',')).join('\n'); // Convert spaces to commas for CSV
-
-                // Prepare the CSV file for download
-                const blob = new Blob([csvContent], { type: 'text/csv' });
-                const url = URL.createObjectURL(blob);
-                downloadLink.href = url;
-                downloadLink.style.display = 'inline';
-            };
-
-            reader.readAsText(file);
-        }
-    </script>
-</body>
-</html>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/dxFYu-b8lv8?si=90QyQQ6iS_U1hl1l" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 <!-- partial -->
   
 </body>
