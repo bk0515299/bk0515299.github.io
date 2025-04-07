@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Downloader</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        input { width: 80%; padding: 10px; margin: 10px 0; }
+        button { padding: 10px 20px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <h2>YouTube Video Downloader</h2>
+    <input type="text" id="videoUrl" placeholder="Enter YouTube URL...">
+    <button onclick="downloadVideo()">Download</button>
+
+    <script>
+        function downloadVideo() {
+            let url = document.getElementById("videoUrl").value;
+            if (url) {
+                window.location.href = `https://en.y2mate.is/?url=${encodeURIComponent(url)}`;
+            } else {
+                alert("Please enter a valid YouTube URL!");
+            }
+        }
+    </script>
+
+</body>
+</html>
+<p style="text-align: right;"><span style="color: #ffffff;"><a style="color: #ffffff;" href="https://bk0515299.github.io/sefesfesse.html">Version 1.0</a></span></p>
