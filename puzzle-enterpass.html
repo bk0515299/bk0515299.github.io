@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Password Protected</title>
+<style>
+  #password-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    font-family: sans-serif;
+  }
+
+  #password-input {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+
+  #submit-button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  #message {
+    margin-top: 10px;
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+
+<div id="password-container">
+  <h1>Enter Password</h1>
+  <label for="password-input">Password:</label>
+  <input type="password" id="password-input" name="password">
+  <button id="submit-button">Submit</button>
+  <div id="message"></div>
+</div>
+
+<script>
+  const passwordInput = document.getElementById('password-input');
+  const submitButton = document.getElementById('submit-button');
+  const messageDiv = document.getElementById('message');
+  const correctPassword = "35267";
+  const redirectURL = "https://bk0515299.github.io/sefesfesse.html";
+
+  submitButton.addEventListener('click', function() {
+    const enteredPassword = passwordInput.value;
+    if (enteredPassword === correctPassword) {
+      window.location.href = redirectURL; // Redirect to the specified URL
+    } else {
+      messageDiv.textContent = "Incorrect password.";
+      messageDiv.style.color = "red";
+    }
+  });
+
+  // Optional: Allow submission on pressing Enter key
+  passwordInput.addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+      submitButton.click();
+    }
+  });
+</script>
+
+</body>
+</html>
