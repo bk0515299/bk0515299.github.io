@@ -1,0 +1,30 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Simple Authenticator</title>
+  <script src="https://unpkg.com/otplib@12.0.1/otplib.umd.min.js"></script>
+</head>
+<body>
+  <h1>Authenticator</h1>
+  <input type="text" id="secret" placeholder="Enter your secret" />
+  <p>Code: <span id="code"></span></p>
+
+  <script>
+    const input = document.getElementById('secret');
+    const codeDisplay = document.getElementById('code');
+
+    function updateCode() {
+      const secret = input.value.trim();
+      if (secret) {
+        const code = otplib.authenticator.generate(secret);
+        codeDisplay.textContent = code;
+      } else {
+        codeDisplay.textContent = '—';
+      }
+    }
+
+    setInterval(updateCode, 1000);
+  </script>
+</body>
+</html>
