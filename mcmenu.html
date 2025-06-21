@@ -31,12 +31,23 @@
       text-align: center;
       transition: 0.2s ease;
     }
-    .item:hover { border-color: #f00; }
     .item img {
       width: 100%;
       height: 150px;
       object-fit: cover;
       border-radius: 8px;
+    }
+    .controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .controls button {
+      width: 30px;
+      height: 30px;
+      font-size: 18px;
     }
     #order, #pay-screen {
       margin-top: 30px;
@@ -44,11 +55,17 @@
       background: #eee;
       border-radius: 10px;
     }
+    #items-left {
+      font-weight: bold;
+      text-align: center;
+      margin-top: 10px;
+      color: #c00;
+    }
   </style>
 </head>
 <body>
 
-<!-- Login Screen -->
+<!-- Login -->
 <div id="login-screen">
   <h1>👤 Login to McMenu</h1>
   <div class="center">
@@ -58,10 +75,11 @@
   </div>
 </div>
 
-<!-- Menu Screen -->
+<!-- Menu -->
 <div id="menu-screen" class="hidden">
   <h1>🍟 McMenu Order Screen</h1>
   <div id="greeting" class="center"></div>
+  <div id="items-left">Items left: 50</div>
   <div class="menu-grid" id="menu"></div>
 
   <div id="order">
@@ -74,7 +92,7 @@
   </div>
 </div>
 
-<!-- Pay Screen -->
+<!-- Pay -->
 <div id="pay-screen" class="hidden">
   <h1>💳 Pay Now</h1>
   <div class="center">
@@ -83,7 +101,7 @@
   </div>
 </div>
 
-<!-- Confirmation Screen -->
+<!-- Confirmation -->
 <div id="confirmation-screen" class="hidden">
   <h1>✅ Thank You!</h1>
   <div class="center">
@@ -102,10 +120,14 @@ const menuItems = [
 ];
 
 let total = 0;
+let itemCount = 0;
+const maxItems = 50;
+const itemQuantities = {};
+const menu = document.getElementById("menu");
 const orderList = document.getElementById("order-list");
 const totalDisplay = document.getElementById("total");
-const menu = document.getElementById("menu");
 const payTotal = document.getElementById("pay-total");
+const itemsLeft = document.getElementById("items-left");
 
 function login() {
   const name = document.getElementById("username").value.trim();
@@ -116,25 +138,53 @@ function login() {
 }
 
 function renderMenu() {
-  menuItems.forEach(item => {
+  menuItems.forEach((item, index) => {
+    itemQuantities[item.name] = 0;
     const div = document.createElement("div");
     div.className = "item";
     div.innerHTML = `
       <img src="${item.img}" alt="${item.name}" />
       <h3>${item.name}</h3>
       <p>$${item.price.toFixed(2)}</p>
-      <button onclick="addToOrder('${item.name}', ${item.price})">Add</button>
+      <div class="controls">
+        <button onclick="changeQty('${item.name}', ${item.price}, -1)">-</button>
+        <span id="qty-${index}">0</span>
+        <button onclick="changeQty('${item.name}', ${item.price}, 1)">+</button>
+      </div>
     `;
     menu.appendChild(div);
   });
 }
 
-function addToOrder(name, price) {
-  const li = document.createElement("li");
-  li.textContent = `${name} - $${price.toFixed(2)}`;
-  orderList.appendChild(li);
-  total += price;
+function changeQty(name, price, delta) {
+  const index = menuItems.findIndex(i => i.name === name);
+  if (delta > 0 && itemCount >= maxItems) {
+    alert("❌ Max 50 items reached.");
+    return;
+  }
+  if (itemQuantities[name] + delta < 0) return;
+
+  itemQuantities[name] += delta;
+  itemCount += delta;
+  total += price * delta;
+
+  document.getElementById(`qty-${index}`).textContent = itemQuantities[name];
   totalDisplay.textContent = total.toFixed(2);
+  itemsLeft.textContent = `Items left: ${maxItems - itemCount}`;
+  renderOrder();
+}
+
+function renderOrder() {
+  orderList.innerHTML = "";
+  for (const name in itemQuantities) {
+    const qty = itemQuantities[name];
+    if (qty > 0) {
+      const item = menuItems.find(i => i.name === name);
+      const li = document.createElement("li");
+      li.textContent = `${name} x${qty} - $${(item.price * qty).toFixed(2)}`;
+      orderList.appendChild(li);
+    }
+  }
 }
 
 function goToPay() {
@@ -160,3 +210,4 @@ function showScreen(id) {
 
 </body>
 </html>
+
