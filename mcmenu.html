@@ -353,4 +353,13 @@ signOutBtn.addEventListener('click', () => {
 
 </body>
 </html>
+<form action="/submit" method="POST">
+  <input type="text" name="name" required>
+  
+  <div class="cf-turnstile" data-sitekey="0x4AAAAAABjo46ULF-_fcVah"></div>
+  
+  <button type="submit">Submit</button>
+</form>
+
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
