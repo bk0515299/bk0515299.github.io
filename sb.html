@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SurpriseBox 🎁</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin-top: 10%;
+      background: #f4f4f4;
+    }
+    button {
+      font-size: 1.5em;
+      padding: 15px 30px;
+      background-color: #ff5f5f;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #e84a4a;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎁 Welcome to SurpriseBox!</h1>
+  <p>Click the button to go somewhere random.</p>
+  <button onclick="goToRandomLink()">Open Surprise</button>
+
+  <script>
+    const links = [
+      "https://www.wikipedia.org/",
+      "https://www.youtube.com/",
+      "https://xkcd.com/",
+      "https://www.reddit.com/r/mildlyinteresting/",
+      "https://pointerpointer.com/",
+      "https://hackertyper.net/",
+      "https://www.theuselessweb.com/"
+    ];
+
+    function goToRandomLink() {
+      const randomIndex = Math.floor(Math.random() * links.length);
+      window.location.href = links[randomIndex];
+    }
+  </script>
+</body>
+</html>
+
