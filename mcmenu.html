@@ -72,7 +72,30 @@
 
 </head>
 <body>
+  
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
 
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyCnXcOJgRr3aDzjZUOnRl9ZQeTV3uY1tZM",
+    authDomain: "memenu-99ec6.firebaseapp.com",
+    projectId: "memenu-99ec6",
+    storageBucket: "memenu-99ec6.firebasestorage.app",
+    messagingSenderId: "833529125033",
+    appId: "1:833529125033:web:7af2ba43a8961b510f31b8",
+    measurementId: "G-KBYLL2GE1N"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
 <!-- Login -->
 <p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://raw.githubusercontent.com/bk0515299/bk0515299.github.io/refs/heads/main/R%20(1).png" alt="" width="500" height="500" /></p>
 <div id="login-screen" class="">
