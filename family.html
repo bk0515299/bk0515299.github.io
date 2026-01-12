@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Firebase Chat</title>
+<style>
+  body { font-family: Arial; max-width: 600px; margin: auto; padding: 20px; }
+  #chat { border: 1px solid #ccc; height: 300px; overflow-y: scroll; padding: 10px; margin-bottom: 10px; }
+  #message { width: 80%; }
+  button { padding: 5px 10px; }
+  input { padding: 5px; margin: 5px 0; width: 100%; }
+</style>
+</head>
+<body>
+
+<h2>Firebase Chat</h2>
+
+<div id="auth">
+  <input id="email" placeholder="Email" type="email">
+  <input id="password" placeholder="Password" type="password">
+  <button onclick="signup()">Sign Up</button>
+  <button onclick="signin()">Sign In</button>
+</div>
+
+<div id="chatUI" style="display:none;">
+  <div id="chat"></div>
+  <input id="message" placeholder="Type a message">
+  <button onclick="sendMessage()">Send</button>
+</div>
+
+<script type="module">
+  // ====== FIREBASE CONFIG ======
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+  import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-analytics.js";
+
+  // Your Firebase project config
+  const firebaseConfig = {
+    apiKey: "AIzaSyB-wNHbLNAsRB3HwblM5yNOHCqs9gBM2T0",
+    authDomain: "chat-family-f9f80.firebaseapp.com",
+    projectId: "chat-family-f9f80",
+    storageBucket: "chat-family-f9f80.firebasestorage.app",
+    messagingSenderId: "930576666026",
+    appId: "1:930576666026:web:f5caa82ef43d615fd1afd3",
+    measurementId: "G-4B9P884Y98"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  const adminEmail = "winstoncao06@gmail.com"; // CHANGE THIS TO YOUR ADMIN EMAIL
+  let currentUserEmail = null;
+
+  // ====== COOKIE FUNCTIONS ======
+  function setCookie(name, value, days=1){
+    document.cookie = name + "=" + value + "; max-age=" + (60*60*24*days) + "; path=/";
+  }
+
+  function getCookie(name){
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(";").shift();
+  }
+
+  // ====== AUTH ======
+  async function signup(){
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    try{
+      await createUserWithEmailAndPassword(auth, email, password);
+      setCookie("chatUser", email);
+      currentUserEmail = email;
+      notifyAdmin(email);
+      showChat();
+    }catch(e){
+      alert(e.message);
+    }
+  }
+
+  async function signin(){
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    try{
+      await signInWithEmailAndPassword(auth, email, password);
+      setCookie("chatUser", email);
+      currentUserEmail = email;
+      showChat();
+    }catch(e){
+      alert(e.message);
+    }
+  }
+
+  // ====== ADMIN NOTIFICATION ======
+  async function notifyAdmin(newEmail){
+    if(newEmail !== adminEmail){
+      await addDoc(collection(db, "adminNotifications"), {
+        email: newEmail,
+        timestamp: serverTimestamp()
+      });
+      if(getCookie("chatUser") === adminEmail){
+        alert(`New signup attempt: ${newEmail}`);
+      }
+    }
+  }
+
+  // ====== CHAT ======
+  const chatDiv = document.getElementById('chat');
+
+  function showChat(){
+    document.getElementById('auth').style.display = 'none';
+    document.getElementById('chatUI').style.display = 'block';
+    currentUserEmail = getCookie("chatUser");
+    listenMessages();
+  }
+
+  async function sendMessage(){
+    const text = document.getElementById('message').value;
+    if(!text) return;
+    await addDoc(collection(db, "chats", "mainChat", "messages"), {
+      sender: currentUserEmail,
+      text,
+      timestamp: serverTimestamp()
+    });
+    document.getElementById('message').value = '';
+  }
+
+  function listenMessages(){
+    const q = query(collection(db, "chats", "mainChat", "messages"), orderBy("timestamp"));
+    onSnapshot(q, snapshot => {
+      chatDiv.innerHTML = "";
+      snapshot.forEach(doc => {
+        const msg = doc.data();
+        chatDiv.innerHTML += `<b>${msg.sender}:</b> ${msg.text}<br>`;
+        chatDiv.scrollTop = chatDiv.scrollHeight;
+      });
+    });
+
+    // Admin notifications
+    if(currentUserEmail === adminEmail){
+      const notifQuery = collection(db, "adminNotifications");
+      onSnapshot(notifQuery, snapshot => {
+        snapshot.docChanges().forEach(change => {
+          if(change.type === "added"){
+            const data = change.doc.data();
+            alert(`New signup attempt: ${data.email}`);
+          }
+        });
+      });
+    }
+  }
+
+  // ====== AUTO LOGIN ======
+  window.onload = () => {
+    const email = getCookie("chatUser");
+    if(email){
+      currentUserEmail = email;
+      showChat();
+    }
+  }
+
+</script>
+
+</body>
+</html>
