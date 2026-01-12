@@ -35,7 +35,7 @@
   import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-analytics.js";
 
-  // Your Firebase project config
+  // Firebase project config
   const firebaseConfig = {
     apiKey: "AIzaSyB-wNHbLNAsRB3HwblM5yNOHCqs9gBM2T0",
     authDomain: "chat-family-f9f80.firebaseapp.com",
@@ -52,7 +52,7 @@
   const auth = getAuth(app);
   const db = getFirestore(app);
 
-  const adminEmail = "winstoncao06@gmail.com"; // CHANGE THIS TO YOUR ADMIN EMAIL
+  const adminEmail = "winstoncao06@gmail.com"; // Set your admin email
   let currentUserEmail = null;
 
   // ====== COOKIE FUNCTIONS ======
@@ -161,6 +161,11 @@
       showChat();
     }
   }
+
+  // ====== MAKE FUNCTIONS GLOBAL ======
+  window.signup = signup;
+  window.signin = signin;
+  window.sendMessage = sendMessage;
 
 </script>
 
