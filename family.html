@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Firebase Chat with Approval</title>
+<title>Firebase Chat with Admin</title>
 <style>
   body { font-family: Arial; max-width: 600px; margin: auto; padding: 20px; }
   #chat { border: 1px solid #ccc; height: 300px; overflow-y: scroll; padding: 10px; margin-bottom: 10px; }
@@ -14,7 +14,7 @@
 </head>
 <body>
 
-<h2>Firebase Chat with Approval</h2>
+<h2>Firebase Chat with Admin</h2>
 
 <div id="auth">
   <input id="email" placeholder="Email" type="email">
@@ -35,174 +35,174 @@
 </div>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-  import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, getDocs, doc, updateDoc, where } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-analytics.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, getDocs, doc, updateDoc, where } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-analytics.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyB-wNHbLNAsRB3HwblM5yNOHCqs9gBM2T0",
-    authDomain: "chat-family-f9f80.firebaseapp.com",
-    projectId: "chat-family-f9f80",
-    storageBucket: "chat-family-f9f80.firebasestorage.app",
-    messagingSenderId: "930576666026",
-    appId: "1:930576666026:web:f5caa82ef43d615fd1afd3",
-    measurementId: "G-4B9P884Y98"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyB-wNHbLNAsRB3HwblM5yNOHCqs9gBM2T0",
+  authDomain: "chat-family-f9f80.firebaseapp.com",
+  projectId: "chat-family-f9f80",
+  storageBucket: "chat-family-f9f80.firebasestorage.app",
+  messagingSenderId: "930576666026",
+  appId: "1:930576666026:web:f5caa82ef43d615fd1afd3",
+  measurementId: "G-4B9P884Y98"
+};
 
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-  const adminEmail = "winstoncao06@gmail.com"; // admin email
-  let currentUserEmail = null;
+const adminEmail = "winstoncao06@gmail.com"; // Admin email
+let currentUserEmail = null;
 
-  // ====== COOKIE FUNCTIONS ======
-  function setCookie(name, value, days=1){
-    document.cookie = name + "=" + value + "; max-age=" + (60*60*24*days) + "; path=/";
-  }
+// ====== COOKIE FUNCTIONS ======
+function setCookie(name, value, days=1){
+  document.cookie = name + "=" + value + "; max-age=" + (60*60*24*days) + "; path=/";
+}
 
-  function getCookie(name){
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if(parts.length===2) return parts.pop().split(";").shift();
-  }
+function getCookie(name){
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if(parts.length===2) return parts.pop().split(";").shift();
+}
 
-  // ====== SIGN UP ======
-  async function signup(){
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    try{
-      await createUserWithEmailAndPassword(auth, email, password);
+// ====== SIGN UP ======
+async function signup(){
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  try{
+    await createUserWithEmailAndPassword(auth, email, password);
 
-      // Add user to Firestore as unapproved
-      await addDoc(collection(db, "users"), {
-        email,
-        approved: false,
-        timestamp: serverTimestamp()
-      });
-
-      notifyAdmin(email);
-      alert("Sign up successful. Waiting for admin approval.");
-    }catch(e){
-      alert(e.message);
-    }
-  }
-
-  // ====== SIGN IN ======
-  async function signin(){
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    try{
-      await signInWithEmailAndPassword(auth, email, password);
-
-      // Check approval status
-      const q = query(collection(db,"users"), where("email","==",email));
-      const snapshot = await getDocs(q);
-      if(snapshot.empty){
-        alert("User record not found. Contact admin.");
-        return;
-      }
-      const userData = snapshot.docs[0].data();
-      if(!userData.approved){
-        alert("Your account is waiting for admin approval.");
-        return;
-      }
-
-      setCookie("chatUser", email);
-      currentUserEmail = email;
-      showChat();
-
-    }catch(e){
-      alert(e.message);
-    }
-  }
-
-  // ====== ADMIN NOTIFICATION ======
-  async function notifyAdmin(newEmail){
-    if(newEmail !== adminEmail){
-      if(getCookie("chatUser") === adminEmail){
-        alert(`New signup request: ${newEmail}`);
-      }
-    }
-  }
-
-  // ====== CHAT ======
-  const chatDiv = document.getElementById('chat');
-
-  function showChat(){
-    document.getElementById('auth').style.display = 'none';
-    currentUserEmail = getCookie("chatUser");
-
-    if(currentUserEmail === adminEmail){
-      document.getElementById('adminPanel').style.display = 'block';
-      showPendingUsers();
-    } else {
-      document.getElementById('chatUI').style.display = 'block';
-      listenMessages();
-    }
-  }
-
-  async function sendMessage(){
-    const text = document.getElementById('message').value;
-    if(!text) return;
-    await addDoc(collection(db, "chats", "mainChat", "messages"), {
-      sender: currentUserEmail,
-      text,
+    await addDoc(collection(db, "users"), {
+      email,
+      approved: false,
       timestamp: serverTimestamp()
     });
-    document.getElementById('message').value = '';
-  }
 
-  function listenMessages(){
-    const q = query(collection(db, "chats", "mainChat", "messages"), orderBy("timestamp"));
-    onSnapshot(q, snapshot => {
-      chatDiv.innerHTML = "";
-      snapshot.forEach(doc=>{
-        const msg = doc.data();
-        chatDiv.innerHTML += `<b>${msg.sender}:</b> ${msg.text}<br>`;
-        chatDiv.scrollTop = chatDiv.scrollHeight;
-      });
-    });
+    notifyAdmin(email);
+    alert("Sign up successful. Waiting for admin approval.");
+  }catch(e){
+    alert(e.message);
   }
+}
 
-  // ====== ADMIN: Show pending users ======
-  async function showPendingUsers(){
-    const q = query(collection(db,"users"), where("approved","==",false));
+// ====== SIGN IN ======
+async function signin(){
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  try{
+    await signInWithEmailAndPassword(auth, email, password);
+
+    // Check approval
+    const q = query(collection(db,"users"), where("email","==",email));
     const snapshot = await getDocs(q);
-    const pendingDiv = document.getElementById('pendingUsers');
-    pendingDiv.innerHTML = "";
+    if(snapshot.empty){
+      alert("User record not found. Contact admin.");
+      return;
+    }
+    const userData = snapshot.docs[0].data();
+    if(email !== adminEmail && !userData.approved){
+      alert("Your account is waiting for admin approval.");
+      return;
+    }
 
-    snapshot.forEach(docSnap=>{
-      const data = docSnap.data();
-      const btn = document.createElement('button');
-      btn.textContent = `Approve ${data.email}`;
-      btn.onclick = async ()=>{
-        await updateDoc(doc(db,"users",docSnap.id), { approved:true });
-        alert(`${data.email} approved!`);
-        showPendingUsers();
-      };
-      pendingDiv.appendChild(btn);
-      pendingDiv.appendChild(document.createElement('br'));
-    });
+    setCookie("chatUser", email);
+    currentUserEmail = email;
+    showChat();
+
+  }catch(e){
+    alert(e.message);
   }
+}
 
-  // ====== AUTO LOGIN ======
-  window.onload = () => {
-    const email = getCookie("chatUser");
-    if(email){
-      currentUserEmail = email;
-      showChat();
+// ====== ADMIN NOTIFICATION ======
+async function notifyAdmin(newEmail){
+  if(newEmail !== adminEmail){
+    if(getCookie("chatUser") === adminEmail){
+      alert(`New signup request: ${newEmail}`);
     }
   }
+}
 
-  // ====== Make functions global for buttons ======
-  window.signup = signup;
-  window.signin = signin;
-  window.sendMessage = sendMessage;
+// ====== CHAT ======
+const chatDiv = document.getElementById('chat');
+
+function showChat(){
+  document.getElementById('auth').style.display = 'none';
+  currentUserEmail = getCookie("chatUser");
+
+  // Show chat for everyone
+  document.getElementById('chatUI').style.display = 'block';
+  listenMessages();
+
+  // Show admin panel if admin
+  if(currentUserEmail === adminEmail){
+    document.getElementById('adminPanel').style.display = 'block';
+    showPendingUsers();
+  }
+}
+
+async function sendMessage(){
+  const text = document.getElementById('message').value;
+  if(!text) return;
+  await addDoc(collection(db, "chats", "mainChat", "messages"), {
+    sender: currentUserEmail,
+    text,
+    timestamp: serverTimestamp()
+  });
+  document.getElementById('message').value = '';
+}
+
+function listenMessages(){
+  const q = query(collection(db, "chats", "mainChat", "messages"), orderBy("timestamp"));
+  onSnapshot(q, snapshot => {
+    chatDiv.innerHTML = "";
+    snapshot.forEach(doc=>{
+      const msg = doc.data();
+      chatDiv.innerHTML += `<b>${msg.sender}:</b> ${msg.text}<br>`;
+      chatDiv.scrollTop = chatDiv.scrollHeight;
+    });
+  });
+}
+
+// ====== ADMIN: Show pending users ======
+async function showPendingUsers(){
+  const q = query(collection(db,"users"), where("approved","==",false));
+  const snapshot = await getDocs(q);
+  const pendingDiv = document.getElementById('pendingUsers');
+  pendingDiv.innerHTML = "";
+
+  snapshot.forEach(docSnap=>{
+    const data = docSnap.data();
+    const btn = document.createElement('button');
+    btn.textContent = `Approve ${data.email}`;
+    btn.onclick = async ()=>{
+      await updateDoc(doc(db,"users",docSnap.id), { approved:true });
+      alert(`${data.email} approved!`);
+      showPendingUsers();
+    };
+    pendingDiv.appendChild(btn);
+    pendingDiv.appendChild(document.createElement('br'));
+  });
+}
+
+// ====== AUTO LOGIN ======
+window.onload = () => {
+  const email = getCookie("chatUser");
+  if(email){
+    currentUserEmail = email;
+    showChat();
+  }
+}
+
+// ====== Make functions global for buttons ======
+window.signup = signup;
+window.signin = signin;
+window.sendMessage = sendMessage;
 
 </script>
-
 </body>
 </html>
