@@ -4,50 +4,43 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Request Concert Start</title>
-  <!-- Google Fonts: Roboto -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
       padding: 0;
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
       height: 100vh;
       font-family: 'Roboto', Arial, sans-serif;
-      background-color: #f0f0f0;
-      text-align: center;
-    }
-    h1 {
-      font-size: 3em;
-      margin-bottom: 50px;
-      font-weight: 700;
-      color: #333;
+      background: #f0f0f0;
     }
     button {
       font-size: 2em;
       padding: 30px 60px;
-      background-color: #007aff;
+      background: #007aff;
       color: white;
       border: none;
       border-radius: 12px;
       cursor: pointer;
       font-weight: 700;
-      transition: background-color 0.2s;
     }
     button:hover {
-      background-color: #005bb5;
+      background: #005bb5;
     }
   </style>
 </head>
 <body>
-  <h1>Request Concert Start</h1>
-  
-  <!-- Replace YOUR_PRIVATE_KEY with your actual Pushsafer private key -->
-  <a href="https://www.pushsafer.com/api?private=Yba7hNWQ43jJ7vz2P8vi&title=Request%20Concert%20Start&text=Concert%20Start%20Requested" target="_blank">
-    <button>Request</button>
-  </a>
+  <button onclick="sendEmail()">Request</button>
 
+  <script>
+    function sendEmail() {
+      fetch('http://192.168.1.100:3000/send-email') // <-- your server IP here
+        .then(response => response.text())
+        .then(data => alert(data))
+        .catch(err => alert('Error sending email: ' + err));
+    }
+  </script>
 </body>
 </html>
