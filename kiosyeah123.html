@@ -36,7 +36,7 @@
 
   <script>
     function sendEmail() {
-      fetch('http://192.168.1.100:3000/send-email') // <-- your server IP here
+      fetch('http://192.168.1.71:3000/send-email') // <-- your server IP here
         .then(response => response.text())
         .then(data => alert(data))
         .catch(err => alert('Error sending email: ' + err));
