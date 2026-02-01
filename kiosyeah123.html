@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Request Concert Start</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Google Fonts: Roboto -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f0f0f0;
+      font-family: 'Roboto', Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+    }
+    h1 {
+      font-size: 3em;
+      margin-bottom: 50px;
+      font-weight: 700;
+      color: #333;
+    }
+    button {
+      font-size: 2em;
+      padding: 30px 60px;
+      background-color: #007aff;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: background-color 0.2s;
+    }
+    button:hover {
+      background-color: #005bb5;
+    }
+  </style>
+</head>
+<body>
+  <h1>Request Concert Start</h1>
+  <button onclick="sendNotification()">Request</button>
+
+  <script>
+    function sendNotification() {
+      fetch("https://www.pushsafer.com/api?private=Yba7hNWQ43jJ7vz2P8vi&title=Request%20Concert%20Start&text=Concert%20Start%20Requested")
+        .then(response => {
+          if(response.ok){
+            alert('Notification Sent!');
+          } else {
+            alert('Error sending notification');
+          }
+        })
+        .catch(error => alert('Error sending notification'));
+    }
+  </script>
+</body>
+</html>
