@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Speed Test</title>
+  <style>
+    body {
+      background: black;
+      color: lime;
+      font-family: Arial;
+      text-align: center;
+      margin-top: 120px;
+    }
+    #speed {
+      font-size: 70px;
+      margin: 40px;
+    }
+    #status {
+      font-size: 30px;
+      color: red;
+      margin-top: 20px;
+    }
+    button {
+      padding: 15px 30px;
+      font-size: 20px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Quantum Speed Test</h1>
+<div id="speed">0 Gbps</div>
+<div id="status"></div>
+<button onclick="startTest()">Start</button>
+
+<script>
+function startTest() {
+  let speedDisplay = document.getElementById("speed");
+  let statusDisplay = document.getElementById("status");
+
+  let speed = 0;
+
+  // Phase 1: Up to 100
+  let up1 = setInterval(() => {
+    speed += 5;
+    speedDisplay.innerText = speed + " Gbps";
+    if (speed >= 100) {
+      clearInterval(up1);
+
+      // Drop to tiny value
+      setTimeout(() => {
+        speedDisplay.innerText = "0.00000000000000000001 Mbps";
+
+        // Phase 2: Up again
+        setTimeout(() => {
+          speed = 0;
+          let up2 = setInterval(() => {
+            speed += 10;
+            speedDisplay.innerText = speed + " Gbps";
+            if (speed >= 100) {
+              clearInterval(up2);
+
+              // Final drop
+              setTimeout(() => {
+                speedDisplay.innerText = "0.00000000000000000001 Mbps";
+                statusDisplay.innerText = "Performance Horibbl";
+              }, 1000);
+
+            }
+          }, 100);
+        }, 1000);
+
+      }, 1000);
+    }
+  }, 100);
+}
+</script>
+
+</body>
+</html>
